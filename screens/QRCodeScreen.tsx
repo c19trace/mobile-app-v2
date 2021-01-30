@@ -42,6 +42,7 @@ const generateQRCode = () => {
 }
 
 // Temporary placeholder view
+// This is only displaying a QR code with the text "this is a QR code" and not the token
 const GenerateQRCodeImage = () => (
   <View style={styles.container}>
     <QRCodeImage qrcode={generateQRCode} />
@@ -53,7 +54,16 @@ export default class QRCodeScreen extends React.Component {
   /*
   componentWillMount() {
       // Generate a token which is then passed to QRCodeImage .
-      const token = generateToken(); 
+      const token = generateToken();
+
+      // Store the token here
+      let generated_tokens = await AsyncStorage.getItem("generated_tokens");
+      generated_tokens = JSON.parse(generated_tokens);
+      generated_tokens = list.concat({generated_tokens, token});
+      const newQRCode = JSON.stringify(generated_tokens);
+      var _ = await AsyncStorage.setItem("generated_tokens", JSON.stringify(generated_tokens));
+
+
       const newQRCode = JSON.stringify(token);
 
       this.setState({token: newQRCode}, () => {
