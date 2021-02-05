@@ -6,7 +6,7 @@ export default class QRCodeImage extends React.Component{
     render(){
         return (
         <View>
-            <QRCode value={this.props.token} />
+            <QRCode value={this.props.qrcode} />
         </View>
         );
     }

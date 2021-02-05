@@ -8,12 +8,14 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import QRCodeImage from '../components/QRCodeImage';
 
-import { secretbox, randomBytes } from "tweetnacl";
+import { secretbox } from "tweetnacl";
+import { randomBytes } from 'react-native-randombytes'
+
+import { encode as encodeUTF8 } from "@stablelib/utf8";
 import {
   encode as encodeBase64,
   decode as decodeBase64
 } from "@stablelib/base64";
-import { encode as encodeUTF8 } from "@stablelib/utf8";
 
 const Stack = createStackNavigator();
 
@@ -31,64 +33,63 @@ const encrypt = (msg, key) => {
     return base64FullMessage;
 };
 
-const generateQRCode = () => {
-    const token = generateToken();
-    console.log("new token:" + token)
-
-    var key = generateKey();
-    var encrypted = encrypt(token, key);
-
-    return JSON.stringify(encrypted);
+function generateQRCode(): string{
+  const token = generateToken();
+  var key = generateKey();
+  var encrypted = encrypt(token, key);
+  
+  return JSON.stringify(encrypted);
 }
 
-// Temporary placeholder view
-// This is only displaying a QR code with the text "this is a QR code" and not the token
-const GenerateQRCodeImage = () => (
+interface Props{
+token?: string;
+}
+
+interface State {
+token: string
+}
+
+export default class QRCodeScreen extends React.Component<Props, State> {
+
+constructor(props: Props){
+  super(props);
+
+  this.state = {
+    //token: props.token
+    token: generateQRCode()
+  };
+}
+
+GenerateQRCodeImage = () => (
   <View style={styles.container}>
-    <QRCodeImage qrcode={generateQRCode} />
+    <QRCodeImage qrcode={this.state.token} />
   </View>
 );
 
-export default class QRCodeScreen extends React.Component {
+// For testing
+GenerateQRCodeText = () => (
+  <View style={styles.container}>
+    <Text> {this.state.token} </Text>
+  </View>
+);
 
-  /*
-  componentWillMount() {
-      // Generate a token which is then passed to QRCodeImage .
-      const token = generateToken();
-
-      // Store the token here
-      let generated_tokens = await AsyncStorage.getItem("generated_tokens");
-      generated_tokens = JSON.parse(generated_tokens);
-      generated_tokens = list.concat({generated_tokens, token});
-      const newQRCode = JSON.stringify(generated_tokens);
-      var _ = await AsyncStorage.setItem("generated_tokens", JSON.stringify(generated_tokens));
-
-
-      const newQRCode = JSON.stringify(token);
-
-      this.setState({token: newQRCode}, () => {
-          console.log("QR Code: ", this.state.token);
-      });
-  }
-  */
-
-  render() {
-    return (
-      <Stack.Navigator>
-        <Stack.Screen name='QR Code'
-          component={ GenerateQRCodeImage }
-          options={{
-            headerShown: false
-          }} />
-      </Stack.Navigator>
-    );
-  }
+render() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name='QR Code'
+        component={ this.GenerateQRCodeImage }
+        options={{
+          headerShown: false
+        }} />
+    </Stack.Navigator>
+  );
+}
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
+container: {
+  flex: 1,
+  alignItems: 'center',
+  justifyContent: 'center'
+}
 });
