@@ -5,12 +5,12 @@ import {
   View,
 } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import QRCodeImage from '../components/QRCodeImage';
 
 import { secretbox } from "tweetnacl";
 import { randomBytes } from 'react-native-randombytes'
-
 import { encode as encodeUTF8 } from "@stablelib/utf8";
 import {
   encode as encodeBase64,
@@ -35,10 +35,26 @@ const encrypt = (msg, key) => {
 
 function generateQRCode(): string{
   const token = generateToken();
+  /*  Unsure if encryption will be used.
   var key = generateKey();
   var encrypted = encrypt(token, key);
+  */
   
-  return JSON.stringify(encrypted);
+  //return JSON.stringify(encrypted);
+
+  // Store token
+
+  storeToken(token);
+  return JSON.stringify(token);
+}
+
+const storeToken = async (value) => {
+  try {
+    //await AsyncStorage.setItem('@token', value)
+    await AsyncStorage.setItem('@token', "123")
+  } catch (e) {
+    // saving error
+  }
 }
 
 interface Props{
@@ -46,7 +62,7 @@ token?: string;
 }
 
 interface State {
-token: string
+  token: string
 }
 
 export default class QRCodeScreen extends React.Component<Props, State> {
