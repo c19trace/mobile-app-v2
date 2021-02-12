@@ -62,7 +62,7 @@ export default class DrawerMenuContent extends React.Component<DrawerMenuProps> 
     userFullName: '',
     userEmail: '.com',
     userTimeZone: 'UTC',
-    userPhoto: require('../images/no-profile-pic.png')
+    userPhoto: require('../images/logo.png')
   }
 
   _signOut = async () => {
@@ -105,6 +105,7 @@ export default class DrawerMenuContent extends React.Component<DrawerMenuProps> 
   render() {
     const userLoaded = !this.state.userLoading;
 
+    // https://reactnavigation.org/docs/drawer-navigator/#unmountonblur
     return (
       <UserContext.Provider value={this.state}>
         <Drawer.Navigator
@@ -124,16 +125,16 @@ export default class DrawerMenuContent extends React.Component<DrawerMenuProps> 
           )}>
           <Drawer.Screen name='Home'
             component={HomeScreen}
-            options={{drawerLabel: 'Home', headerTitle: 'Welcome'}} />
+            options={{ drawerLabel: 'Home', headerTitle: 'Welcome'}} />
           { userLoaded &&
             <Drawer.Screen name='QR Code'
               component={QRCodeScreen}
-              options={{drawerLabel: 'QR Code'}} />
+              options={{unmountOnBlur:true, drawerLabel: 'QR Code'}} />
           }
          	{ userLoaded &&
             <Drawer.Screen name='Exposure Check'
               component={ExposureCheckScreen}
-              options={{drawerLabel: 'Exposure Check'}} />
+              options={{unmountOnBlur:true, drawerLabel: 'Exposure Check'}} />
           }
         </Drawer.Navigator>
       </UserContext.Provider>

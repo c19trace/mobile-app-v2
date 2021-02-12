@@ -69,6 +69,7 @@ export default class ExposureCheckScreen extends React.Component {
       // Get our key...
       // Should be a cleaner way to do this?
       getToken().then((data)=>{
+        console.log("Stored token: " + data);
 
         fetch('http://193.160.96.151:5000/get-exposure-list', {
             method: 'GET'

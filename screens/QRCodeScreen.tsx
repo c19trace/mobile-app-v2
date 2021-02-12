@@ -3,6 +3,7 @@ import {
   Text,
   StyleSheet,
   View,
+  TouchableOpacity,
 } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -18,6 +19,23 @@ import {
 } from "@stablelib/base64";
 
 const Stack = createStackNavigator();
+
+const QRCodeState = React.createContext<QRCodeScreenState>({
+  token: ''
+});
+
+type QRCodeScreenState = {
+  token: string;
+}
+
+const storeToken = async (value) => {
+  try {
+    const jsonValue = JSON.stringify(value);
+    await AsyncStorage.setItem('@token', value)
+  } catch (e) {
+    // saving error
+  }
+}
 
 const generateKey = () => encodeBase64(randomBytes(secretbox.keyLength));
 const generateToken = () => encodeBase64(randomBytes(16));
@@ -44,62 +62,52 @@ function generateQRCode(): string{
 
   // Store token
 
-  storeToken(token);
+  //storeToken("123");
   return JSON.stringify(token);
 }
 
-const storeToken = async (value) => {
-  try {
-    //await AsyncStorage.setItem('@token', value)
-    await AsyncStorage.setItem('@token', "123")
-  } catch (e) {
-    // saving error
-  }
-}
+export default class QRCodeScreen extends React.Component {
 
-interface Props{
-token?: string;
-}
-
-interface State {
-  token: string
-}
-
-export default class QRCodeScreen extends React.Component<Props, State> {
-
-constructor(props: Props){
-  super(props);
-
-  this.state = {
-    //token: props.token
-    token: generateQRCode()
+  state: QRCodeScreenState = {
+    token: generateToken()
   };
-}
 
-GenerateQRCodeImage = () => (
-  <View style={styles.container}>
-    <QRCodeImage qrcode={this.state.token} />
-  </View>
-);
 
-// For testing
-GenerateQRCodeText = () => (
-  <View style={styles.container}>
-    <Text> {this.state.token} </Text>
-  </View>
-);
 
-render() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name='QR Code'
-        component={ this.GenerateQRCodeImage }
-        options={{
-          headerShown: false
-        }} />
-    </Stack.Navigator>
+  onPress = () => storeToken(this.state.token);
+
+  GenerateQRCodeImage = () => (
+    // https://reactnative.dev/docs/touchableopacity
+    <View style={styles.container}>
+      <TouchableOpacity
+        // POST request
+        onPress={this.onPress}
+      >
+      <QRCodeImage qrcode={this.state.token} />
+      </TouchableOpacity>
+    </View>
   );
-}
+
+  // For testing
+  GenerateQRCodeText = () => (
+    <View style={styles.container}>
+        <Text> {this.state.token} </Text>
+    </View>
+  );
+
+  render() {
+    return (
+    <QRCodeState.Provider value={this.state}>
+        <Stack.Navigator>
+          <Stack.Screen name='QR Code'
+            component={ this.GenerateQRCodeImage }
+            options={{
+              headerShown: false
+            }} />
+        </Stack.Navigator>
+      </QRCodeState.Provider>
+    );
+  }
 }
 
 const styles = StyleSheet.create({

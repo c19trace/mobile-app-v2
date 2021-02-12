@@ -16,5 +16,5 @@ export const UserContext = React.createContext<UserContextType>({
   userFullName: '',
   userEmail: '',
   userTimeZone: '',
-  userPhoto: require('./images/no-profile-pic.png')
+  userPhoto: require('./images/logo.png')
 });
