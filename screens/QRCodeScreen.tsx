@@ -28,10 +28,15 @@ type QRCodeScreenState = {
   token: string;
 }
 
-const storeToken = async (value) => {
+const storeToken = async (token) => {
   try {
-    const jsonValue = JSON.stringify(value);
-    await AsyncStorage.setItem('@token', value)
+    // Post request can be moved out of here .
+    //fetch('http://193.160.96.151:5000/submit-token', {
+
+    postRequest(token);
+
+    const jsonValue = JSON.stringify(token);
+    await AsyncStorage.setItem('@token', token)
   } catch (e) {
     // saving error
   }
@@ -53,29 +58,49 @@ const encrypt = (msg, key) => {
 
 function generateQRCode(): string{
   const token = generateToken();
-  /*  Unsure if encryption will be used.
+  /*
   var key = generateKey();
   var encrypted = encrypt(token, key);
   */
   
-  //return JSON.stringify(encrypted);
+  //return JSON.stringify(encrypted)
 
   // Store token
 
-  //storeToken("123");
+
   return JSON.stringify(token);
+} 
+
+const postRequest = async (token) => {
+  fetch(IP + '/submit-token', {
+    method: 'POST',
+    headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        token: token
+        //secondParam: 'yourOtherValue'
+    })
+  }).catch(function(error) {
+      console.log(error);
+  });
 }
 
 export default class QRCodeScreen extends React.Component {
 
   state: QRCodeScreenState = {
-    token: generateToken()
+    // Storage on here must be changed to account for longer encryption
+    // This needs to be decrypted...
+    token: generateQRCode()
   };
-
-
 
   onPress = () => storeToken(this.state.token);
 
+  componentDidMount(){
+
+  }
+  
   GenerateQRCodeImage = () => (
     // https://reactnative.dev/docs/touchableopacity
     <View style={styles.container}>

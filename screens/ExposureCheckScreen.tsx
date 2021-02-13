@@ -18,12 +18,14 @@ const Stack = createStackNavigator();
 
 const ExposureState= React.createContext<ExposureScreenState>({
   loading: true,
-  status: ''
+  status: '',
+  token: ''
 });
 
 type ExposureScreenState = {
   loading: boolean;
   status: string;
+  token: string;
 }
 
  const getToken = async () => {
@@ -58,46 +60,48 @@ export default class ExposureCheckScreen extends React.Component {
   static contextType = UserContext;
 
   state: ExposureScreenState = {
-    loading: true,
-    status: "None of your tokens appear on the exposure list"
+    loading: false,
+    status: "None of your tokens appear on the exposure list",
+    token: ''
   };
-
-
 
   async componentDidMount() {
     try {
-      // Get our key...
-      // Should be a cleaner way to do this?
+      // Get token...
       getToken().then((data)=>{
-        console.log("Stored token: " + data);
+        this.setState({token: data});
+        console.log("token: " + this.state.token);
 
-        fetch('http://193.160.96.151:5000/get-exposure-list', {
+        // Can this be removed from here?
+        fetch(IP + '/get-exposure-list', {
             method: 'GET'
           })
           .then((response) => response.text())
-          .then((responseText) => {
-            console.log(responseText);
-            var exposed_ids = responseText.split("\n");
+        .then((responseText) => {
+          console.log(responseText);
 
-            var found = false;
-            Object.keys(exposed_ids).forEach(function(i) {
-                // Compare against stored tokens, if matched then display message
-                if (exposed_ids[i] === data){
-                  console.log("Exposure detected", exposed_ids[i], " ", data)
-                  found = true;
-                }
-            });
+          var exposed_ids = responseText.split("\n");
 
-          if(found){
-            this.setState({status: "Exposure Found."});
-          }
-            this.setState({loading: false});
-
-          })
-          .catch((error) => {
-            console.error(error);
+          var found = false;
+          Object.keys(exposed_ids).forEach(function(i) {
+              // Compare against stored tokens, if matched then display message
+              if (exposed_ids[i] === data){
+                console.log("Exposure detected", exposed_ids[i], " ", data)
+                found = true;
+              }
           });
+
+        if(found){
+          this.setState({status: "Exposure Found."});
+        }
+          this.setState({loading: false});
+
         })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      })
     } catch(error) {
       Alert.alert(
         'Error getting events',
@@ -109,8 +113,10 @@ export default class ExposureCheckScreen extends React.Component {
         ],
         { cancelable: false }
       );
-
     }
+
+
+
   }
 
   render() {
