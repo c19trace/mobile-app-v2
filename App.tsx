@@ -8,8 +8,22 @@ import SignInScreen from './screens/SignInScreen';
 import DrawerMenuContent from './menus/DrawerMenu'
 import AuthLoadingScreen from './screens/AuthLoadingScreen';
 import { AuthManager } from './auth/AuthManager';
+import SQLite from 'react-native-sqlite-storage';
 
 const Stack = createStackNavigator();
+
+global.db = SQLite.openDatabase(
+  {
+    name: 'TokenDatabase',
+    location: 'default',
+    createFromLocation: 2,
+  },
+  () => { },
+  error => {
+    console.log("ERROR: " + error);
+  }
+);
+
 
 type Props = {
   navigation: StackNavigationProp<ParamListBase>;

@@ -11,10 +11,11 @@ import {
   View,
 } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GetTokens } from '../queries/tokendb.js'
 import { UserContext } from '../UserContext';
 
 const Stack = createStackNavigator();
+const IP = '';
 
 const ExposureState= React.createContext<ExposureScreenState>({
   loading: true,
@@ -28,16 +29,7 @@ type ExposureScreenState = {
   token: string;
 }
 
- const getToken = async () => {
-    try {
-      const value = await AsyncStorage.getItem('@token')
-      return value != null ? value : null;
-    } catch(e) {
-      // error reading value
-    }
-  }
-
-const CalendarComponent = () => {
+const ExposureCheckComponent = () => {
   const exposureState = React.useContext(ExposureState);
   return (
     <View style={styles.container}>
@@ -56,66 +48,59 @@ const CalendarComponent = () => {
   );
 }
 
+
 export default class ExposureCheckScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    //SQLite.DEBUG = true;
+
+  }
+
   static contextType = UserContext;
 
   state: ExposureScreenState = {
-    loading: false,
+    loading: true,
     status: "None of your tokens appear on the exposure list",
     token: ''
   };
 
   async componentDidMount() {
-    try {
-      // Get token...
-      getToken().then((data)=>{
-        this.setState({token: data});
-        console.log("token: " + this.state.token);
 
-        // Can this be removed from here?
-        fetch(IP + '/get-exposure-list', {
-            method: 'GET'
-          })
-          .then((response) => response.text())
-        .then((responseText) => {
-          console.log(responseText);
+    GetTokens().then((data) => {
+      console.log("Stored Tokens:")
+      for (var i = 0; i < data.length; i++) {
+        console.log("\t", data[i])
+      } 
+      
 
-          var exposed_ids = responseText.split("\n");
+    fetch(IP +'/get-exposure-list', {
+         method: 'GET'
+      })
+      .then((response) => response.text())
+      .then((responseText) => {
+         //console.log(responseText);
+         var exposed_ids = responseText.split("\n");
 
-          var found = false;
-          Object.keys(exposed_ids).forEach(function(i) {
-              // Compare against stored tokens, if matched then display message
-              if (exposed_ids[i] === data){
-                console.log("Exposure detected", exposed_ids[i], " ", data)
-                found = true;
-              }
-          });
+         var found = false;
+         Object.keys(exposed_ids).forEach(function(i) {
+            // Compare against stored tokens, if matched then display message
+            if(data.includes(exposed_ids[i])){
+              console.log("Exposure detected", exposed_ids[i])
+              found = true;
+            }
+         });
 
         if(found){
-          this.setState({status: "Exposure Found."});
+            this.setState({status: "Exposure Found."});
         }
-          this.setState({loading: false});
 
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+        this.setState({loading: false});
 
       })
-    } catch(error) {
-      Alert.alert(
-        'Error getting events',
-        JSON.stringify(error),
-        [
-          {
-            text: 'OK'
-          }
-        ],
-        { cancelable: false }
-      );
-    }
-
-
+      .catch((error) => {
+         console.error(error);
+      });
+    })
 
   }
 
@@ -124,7 +109,7 @@ export default class ExposureCheckScreen extends React.Component {
       <ExposureState.Provider value={this.state}>
         <Stack.Navigator>
           <Stack.Screen name='Calendar'
-            component={ CalendarComponent }
+            component={ ExposureCheckComponent }
             options={{
               headerShown: false
             }} />

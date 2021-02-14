@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import QRCodeImage from '../components/QRCodeImage';
 
@@ -18,7 +17,10 @@ import {
   decode as decodeBase64
 } from "@stablelib/base64";
 
+import { SaveToken } from '../queries/tokendb.js'
+
 const Stack = createStackNavigator();
+const IP = '';
 
 const QRCodeState = React.createContext<QRCodeScreenState>({
   token: ''
@@ -29,17 +31,14 @@ type QRCodeScreenState = {
 }
 
 const storeToken = async (token) => {
-  try {
-    // Post request can be moved out of here .
-    //fetch('http://193.160.96.151:5000/submit-token', {
 
-    postRequest(token);
+    SaveToken(token).then(()=>{
+      postRequest(token)
+    })
+    .catch((error) => {
+        console.error(error);
+    })
 
-    const jsonValue = JSON.stringify(token);
-    await AsyncStorage.setItem('@token', token)
-  } catch (e) {
-    // saving error
-  }
 }
 
 const generateKey = () => encodeBase64(randomBytes(secretbox.keyLength));
@@ -64,24 +63,20 @@ function generateQRCode(): string{
   */
   
   //return JSON.stringify(encrypted)
-
-  // Store token
-
-
   return JSON.stringify(token);
 } 
 
 const postRequest = async (token) => {
   fetch(IP + '/submit-token', {
+
     method: 'POST',
     headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-        token: token
-        //secondParam: 'yourOtherValue'
-    })
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          token: token
+      })
   }).catch(function(error) {
       console.log(error);
   });
@@ -92,31 +87,20 @@ export default class QRCodeScreen extends React.Component {
   state: QRCodeScreenState = {
     // Storage on here must be changed to account for longer encryption
     // This needs to be decrypted...
-    token: generateQRCode()
+    // Need to strip the inverted commas, function returns a string with...
+    token: generateQRCode().replace(/['"]+/g, '')
   };
 
   onPress = () => storeToken(this.state.token);
 
-  componentDidMount(){
-
-  }
-  
   GenerateQRCodeImage = () => (
     // https://reactnative.dev/docs/touchableopacity
     <View style={styles.container}>
       <TouchableOpacity
-        // POST request
         onPress={this.onPress}
       >
       <QRCodeImage qrcode={this.state.token} />
       </TouchableOpacity>
-    </View>
-  );
-
-  // For testing
-  GenerateQRCodeText = () => (
-    <View style={styles.container}>
-        <Text> {this.state.token} </Text>
     </View>
   );
 

@@ -10,6 +10,8 @@ target 'C19Trace' do
 
   pod 'react-native-randombytes', :path => '../node_modules/react-native-randombytes'
 
+  pod 'react-native-sqlite-storage', :path => '../node_modules/react-native-sqlite-storage'
+
   target 'C19TraceTests' do
     inherit! :complete
     # Pods for testing
