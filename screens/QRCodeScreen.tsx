@@ -17,6 +17,7 @@ import {
   decode as decodeBase64
 } from "@stablelib/base64";
 
+
 import { SaveToken } from '../queries/tokendb.js'
 
 const Stack = createStackNavigator();
@@ -27,20 +28,23 @@ const QRCodeState = React.createContext<QRCodeScreenState>({
 });
 
 // Should be taken from userContext...
-const id = "G00000000"
+const email = "G00000000"
 
 type QRCodeScreenState = {
   token: string;
 }
 
 const storeToken = async (token) => {
+  postRequest(token)
+  .catch((error) => {
+      console.error(error);
+  })
 
-    SaveToken(token).then(()=>{
-      postRequest(token)
-    })
-    .catch((error) => {
-        console.error(error);
-    })
+}
+
+function GetEmail(result, context) {
+
+  return context.userEmail
 
 }
 
@@ -60,26 +64,30 @@ const encrypt = (msg, key) => {
 
 function generateQRCode(): string{
   const token = generateToken();
-  /*
-  var key = generateKey();
-  var encrypted = encrypt(token, key);
-  */
-  
-  //return JSON.stringify(encrypted)
-  return JSON.stringify(token);
+  // save the token to internal db...
+  SaveToken(token);
+
+
+  //var key = generateKey();
+  var key = "5MsHBAGgmulDbS2AsX9bNY9fd5SVKd3IG5SXc9JTVic=";
+  var msg = email + ":" + token;
+  //console.log(key)
+  var encrypted = encrypt(msg, key);
+
+
+
+  return JSON.stringify(encrypted)
 } 
 
 const postRequest = async (token) => {
   fetch(IP, {
-
     method: 'POST',
     headers: {
         Accept: 'application/json',
           'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        id: id,
-        token: token
+        msg: token
       })
   }).catch(function(error) {
       console.log(error);
@@ -92,7 +100,7 @@ export default class QRCodeScreen extends React.Component {
     // Storage on here must be changed to account for longer encryption
     // This needs to be decrypted...
     // Need to strip the inverted commas, function returns a string with...
-    token: generateQRCode().replace(/['"]+/g, '')
+    token: generateQRCode()//.replace(/['"]+/g, '')
   };
 
   onPress = () => storeToken(this.state.token);
