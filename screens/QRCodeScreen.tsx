@@ -74,8 +74,6 @@ function generateQRCode(): string{
   //console.log(key)
   var encrypted = encrypt(msg, key);
 
-
-
   return JSON.stringify(encrypted)
 } 
 
