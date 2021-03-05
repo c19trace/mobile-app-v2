@@ -15,7 +15,7 @@ import { GetTokens } from '../queries/tokendb.js'
 import { UserContext } from '../UserContext';
 
 const Stack = createStackNavigator();
-const IP = '';
+const IP = 'http://35.205.110.132:5000/get-exposure-list';
 
 const ExposureState= React.createContext<ExposureScreenState>({
   loading: true,
@@ -73,7 +73,7 @@ export default class ExposureCheckScreen extends React.Component {
       } 
       
 
-    fetch(IP +'/get-exposure-list', {
+    fetch(IP, {
          method: 'GET'
       })
       .then((response) => response.text())
@@ -108,7 +108,7 @@ export default class ExposureCheckScreen extends React.Component {
     return (
       <ExposureState.Provider value={this.state}>
         <Stack.Navigator>
-          <Stack.Screen name='Calendar'
+          <Stack.Screen name='ExposureCheck'
             component={ ExposureCheckComponent }
             options={{
               headerShown: false

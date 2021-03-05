@@ -20,11 +20,14 @@ import {
 import { SaveToken } from '../queries/tokendb.js'
 
 const Stack = createStackNavigator();
-const IP = '';
+const IP = 'http://35.205.110.132:5000/submit-token';
 
 const QRCodeState = React.createContext<QRCodeScreenState>({
   token: ''
 });
+
+// Should be taken from userContext...
+const id = "G00000000"
 
 type QRCodeScreenState = {
   token: string;
@@ -67,7 +70,7 @@ function generateQRCode(): string{
 } 
 
 const postRequest = async (token) => {
-  fetch(IP + '/submit-token', {
+  fetch(IP, {
 
     method: 'POST',
     headers: {
@@ -75,7 +78,8 @@ const postRequest = async (token) => {
           'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-          token: token
+        id: id,
+        token: token
       })
   }).catch(function(error) {
       console.log(error);
