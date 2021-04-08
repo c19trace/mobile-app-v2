@@ -15,7 +15,7 @@ import { GetTokens } from '../queries/tokendb.js'
 import { UserContext } from '../UserContext';
 
 const Stack = createStackNavigator();
-const IP = 'http://35.205.110.132:5000/get-exposure-list';
+const IP = 'http://35.195.7.207:5000/get-exposure-list';
 
 const ExposureState= React.createContext<ExposureScreenState>({
   loading: true,

@@ -21,14 +21,14 @@ import {
 import { SaveToken } from '../queries/tokendb.js'
 
 const Stack = createStackNavigator();
-const IP = 'http://35.205.110.132:5000/submit-token';
+const IP = 'http://35.195.7.207:5000/submit-token';
 
 const QRCodeState = React.createContext<QRCodeScreenState>({
   token: ''
 });
 
 // Should be taken from userContext...
-const email = "G00000000"
+const email = "G004001001"
 
 type QRCodeScreenState = {
   token: string;
@@ -39,12 +39,6 @@ const storeToken = async (token) => {
   .catch((error) => {
       console.error(error);
   })
-
-}
-
-function GetEmail(result, context) {
-
-  return context.userEmail
 
 }
 
@@ -63,6 +57,7 @@ const encrypt = (msg, key) => {
 };
 
 function generateQRCode(): string{
+
   const token = generateToken();
   // save the token to internal db...
   SaveToken(token);
@@ -93,6 +88,7 @@ const postRequest = async (token) => {
 }
 
 export default class QRCodeScreen extends React.Component {
+
 
   state: QRCodeScreenState = {
     // Storage on here must be changed to account for longer encryption
