@@ -28,7 +28,7 @@ const QRCodeState = React.createContext<QRCodeScreenState>({
 });
 
 // Should be taken from userContext...
-const email = "G004001001"
+const email = "G00400101"
 
 type QRCodeScreenState = {
   token: string;
