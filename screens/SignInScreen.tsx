@@ -1,14 +1,13 @@
 // Adapted from https://reactnavigation.org/docs/auth-flow
 import React from 'react';
 import {
-  Alert,
   Button,
   StyleSheet,
   View,
+  Image
 } from 'react-native';
 import { ParamListBase } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack'
-
 import { AuthContext } from '../AuthContext';
 
 type SignInProps = {
@@ -32,7 +31,17 @@ export default class SignInScreen extends React.Component<SignInProps> {
   render() {
     return (
       <View style={styles.container}>
-        <Button title='Sign In' onPress={this._signInAsync}/>
+        <View style={styles.container}>
+          <Button title='Sign In' onPress={this._signInAsync}/>
+        </View>
+
+        <View>
+          <Image 
+            source={require('../images/title-logo.png')}
+            resizeMode="contain"
+            style={styles.logo}
+          />
+        </View>
       </View>
     );
   }
@@ -43,5 +52,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center'
-  }
+  },
+  logo: {
+     alignSelf: 'center',
+     justifyContent: "space-around",
+     opacity: 0.8,
+     height: 200,
+  },
 });

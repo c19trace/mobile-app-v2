@@ -2,33 +2,27 @@ import React from 'react';
 import {
   Text,
   StyleSheet,
+  Image,
   View,
   TouchableOpacity,
 } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-
-import QRCodeImage from '../components/QRCodeImage';
-
 import { secretbox } from "tweetnacl";
 import { randomBytes } from 'react-native-randombytes'
 import { encode as encodeUTF8 } from "@stablelib/utf8";
 import {
   encode as encodeBase64,
-  decode as decodeBase64
-} from "@stablelib/base64";
-
-
+  decode as decodeBase64 } from "@stablelib/base64";
+import QRCodeImage from '../components/QRCodeImage';
 import { SaveToken } from '../queries/tokendb.js'
 
 const Stack = createStackNavigator();
-const IP = 'http://35.195.7.207:5000/submit-token';
+const email = "G00400101"
+const url = 'http://:5000/submit-token';
 
 const QRCodeState = React.createContext<QRCodeScreenState>({
   token: ''
 });
-
-// Should be taken from userContext...
-const email = "G00400101"
 
 type QRCodeScreenState = {
   token: string;
@@ -39,7 +33,6 @@ const storeToken = async (token) => {
   .catch((error) => {
       console.error(error);
   })
-
 }
 
 const generateKey = () => encodeBase64(randomBytes(secretbox.keyLength));
@@ -57,23 +50,19 @@ const encrypt = (msg, key) => {
 };
 
 function generateQRCode(): string{
-
   const token = generateToken();
   // save the token to internal db...
   SaveToken(token);
 
-
-  //var key = generateKey();
   var key = "5MsHBAGgmulDbS2AsX9bNY9fd5SVKd3IG5SXc9JTVic=";
   var msg = email + ":" + token;
-  //console.log(key)
   var encrypted = encrypt(msg, key);
 
   return JSON.stringify(encrypted)
 } 
 
 const postRequest = async (token) => {
-  fetch(IP, {
+  fetch(url, {
     method: 'POST',
     headers: {
         Accept: 'application/json',
@@ -88,27 +77,36 @@ const postRequest = async (token) => {
 }
 
 export default class QRCodeScreen extends React.Component {
-
-
   state: QRCodeScreenState = {
-    // Storage on here must be changed to account for longer encryption
-    // This needs to be decrypted...
-    // Need to strip the inverted commas, function returns a string with...
-    token: generateQRCode()//.replace(/['"]+/g, '')
+    token: generateQRCode()
   };
 
   onPress = () => storeToken(this.state.token);
 
-  GenerateQRCodeImage = () => (
-    // https://reactnative.dev/docs/touchableopacity
-    <View style={styles.container}>
-      <TouchableOpacity
-        onPress={this.onPress}
-      >
-      <QRCodeImage qrcode={this.state.token} />
-      </TouchableOpacity>
-    </View>
-  );
+  GenerateQRCodeImage = () => {
+    return(
+      // https://reactnative.dev/docs/touchableopacity
+      <View style={styles.container}>
+        <View style={styles.container}>
+          <TouchableOpacity style={styles.touchable}
+            onPress={this.onPress}
+          >
+          <QRCodeImage qrcode={this.state.token} />
+          </TouchableOpacity>
+          <Text style={styles.text}>Press to register attendance.</Text>
+        </View>
+        
+
+        <View >
+          <Image 
+            source={require('../images/title-logo.png')}
+            resizeMode="contain"
+            style={styles.logo}
+          />
+        </View>
+      </View>
+    );
+  }
 
   render() {
     return (
@@ -116,9 +114,7 @@ export default class QRCodeScreen extends React.Component {
         <Stack.Navigator>
           <Stack.Screen name='QR Code'
             component={ this.GenerateQRCodeImage }
-            options={{
-              headerShown: false
-            }} />
+            options={{ headerShown: false }} />
         </Stack.Navigator>
       </QRCodeState.Provider>
     );
@@ -126,9 +122,31 @@ export default class QRCodeScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-container: {
-  flex: 1,
-  alignItems: 'center',
-  justifyContent: 'center'
-}
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  text: {
+    alignItems: 'center',
+    justifyContent: "center",
+    alignContent: 'center',
+    fontSize: 16,
+    fontFamily: 'lucida grande',
+    color: "#34495e",
+    marginTop: 50
+  },
+  logo: {
+     alignSelf: 'center',
+     justifyContent: "space-around",
+     opacity: 0.8,
+     height: 200,
+  },
+  touchable: {
+    padding: 7,
+    borderColor: '#34495e',
+    borderWidth: 2,
+    borderRadius: 4,
+    marginTop:150
+  }
 });
