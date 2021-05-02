@@ -4,8 +4,8 @@ import {
   Image,
   View,
   TouchableOpacity,
+  Text
 } from 'react-native';
-import { Text } from 'react-native-elements'
 import { createStackNavigator } from '@react-navigation/stack';
 import { secretbox } from "tweetnacl";
 import { randomBytes } from 'react-native-randombytes'

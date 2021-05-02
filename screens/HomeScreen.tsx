@@ -5,8 +5,8 @@ import {
   StyleSheet,
   Image,
   View,
+  Text
 } from 'react-native';
-import { Text } from 'react-native-elements'
 import { createStackNavigator } from '@react-navigation/stack';
 import { UserContext } from '../UserContext';
 

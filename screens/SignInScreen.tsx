@@ -3,9 +3,9 @@ import React from 'react';
 import {
   StyleSheet,
   View,
-  Image
+  Image,
+  Button
 } from 'react-native';
-import { Button } from 'react-native-elements'
 import { ParamListBase } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack'
 import { AuthContext } from '../AuthContext';
