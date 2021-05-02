@@ -1,11 +1,11 @@
 import React from 'react';
 import {
-  Text,
   StyleSheet,
   Image,
   View,
   TouchableOpacity,
 } from 'react-native';
+import { Text } from 'react-native-elements'
 import { createStackNavigator } from '@react-navigation/stack';
 import { secretbox } from "tweetnacl";
 import { randomBytes } from 'react-native-randombytes'
@@ -87,6 +87,13 @@ export default class QRCodeScreen extends React.Component {
     return(
       // https://reactnative.dev/docs/touchableopacity
       <View style={styles.container}>
+
+        <Image 
+          source={require('../images/prevention-lite.png')}
+          resizeMode="contain"
+          style={styles.info}
+        />
+
         <View style={styles.container}>
           <TouchableOpacity style={styles.touchable}
             onPress={this.onPress}
@@ -131,7 +138,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: "center",
     alignContent: 'center',
-    fontSize: 16,
+    fontSize: 20,
     fontFamily: 'lucida grande',
     color: "#34495e",
     marginTop: 50
@@ -147,6 +154,11 @@ const styles = StyleSheet.create({
     borderColor: '#34495e',
     borderWidth: 2,
     borderRadius: 4,
-    marginTop:150
+    marginTop:120
+  },
+  info: {
+    borderWidth: 1,
+    borderRadius: 4,
+    marginTop: 20
   }
 });

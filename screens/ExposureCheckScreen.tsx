@@ -4,10 +4,10 @@ import {
   Modal,
   Platform,
   StyleSheet,
-  Text,
   View,
   Image,
 } from 'react-native';
+import { Text } from 'react-native-elements'
 import { createStackNavigator } from '@react-navigation/stack';
 import { GetTokens } from '../queries/tokendb.js'
 import { UserContext } from '../UserContext';
@@ -63,6 +63,12 @@ const ExposureCheckComponent = () => {
         </View>
       </Modal>
 
+
+      <Image 
+        source={require('../images/prevention-lite.png')}
+        resizeMode="contain"
+        style={styles.info}
+      />
       <View style={styles.container}>
         {DisplayImg(exposureState.exposureFound)}
         <Text style={styles.text}>{exposureState.status}</Text>
@@ -151,7 +157,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     alignContent: 'center',
-    fontSize: 16,
+    fontSize: 20,
     fontFamily: 'lucida grande',
     color: "#34495e"
   },
@@ -165,5 +171,10 @@ const styles = StyleSheet.create({
      alignSelf: 'center',
      justifyContent: "space-around",
      opacity: 0.8,
+  },
+  info: {
+    borderWidth: 1,
+    borderRadius: 4,
+    marginTop: 20
   }
 });
