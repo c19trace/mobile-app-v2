@@ -1,8 +1,7 @@
 To run:  
 `yarn install` `react-native run-android` 
 
-
-Project setup.  
+#### Project setup
 
 1. Created project:  `npx react-native init C19Trace --template react-native-template-typescript`
 
@@ -33,3 +32,23 @@ yarn add @stablelib/base64
 yarn add react-native-svg  
 yarn add react-native-qrcode-svg  
 ```
+
+
+
+### About
+A React Native application which serves two purposes, firstly it provides students with a convenient means to register their attendance on GMIT campus. Secondly, the application will update students on the spread of COVID-19 through the Exposure Check view. The application was built and tested using Android Studio.
+
+User authentication is handled by Microsoft’s Azure AD.
+
+The application contains two views of note, the QRCode view and Exposure check view. 
+
+#### QR Code screen
+<img src="https://user-images.githubusercontent.com/37144829/117446553-2642bc00-af34-11eb-9d18-67982b648eec.png" alt="screen-qrcode" width="200" height="400" />
+
+The QR Code screen fulfils one of the attendance registration functions of themobile application. This is done by touching a QR code which is displayed on screen. Once presseda randomly generated token will be sent to the back-end server, along with thestudents ID.
+
+#### Exposure check screen
+<img src="https://user-images.githubusercontent.com/37144829/117447970-0ca27400-af36-11eb-8a43-a5e205773a7d.png" alt="screen-exposure" width="400" height="400" />
+
+The Exposure check screen informs the student of their exposure status. This is done by requesting the list of the exposed tokens stored on the back-endserver and comparing these against tokens stored on the device. If a match is found the student is informed of this exposure. The student is given visual feedback of their status with the displaying of either agreen checkmark  indicating that no exposure has been detected, or a redcross, indicating that an exposure has been detected.
+
